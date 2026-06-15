@@ -589,11 +589,7 @@ function App() {
       {/* Real-Time Devices Dashboard Section */}
       <section id="devices" className="devices-section main-layout">
         <div className="section-header">
-          <span className="section-subtitle">Real-Time Data</span>
-          <h2 className="section-title">SSMet0126 Weather Stations</h2>
-          <p className="section-desc">
-            Monitor precipitation telemetries, station health, and historical analysis from live IoT nodes.
-          </p>
+          <h2 className="section-title">Real-Time Data</h2>
         </div>
 
         {!selectedDevice ? (
