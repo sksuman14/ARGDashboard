@@ -1,4 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix leaflet marker icon issue
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
 import { 
   CloudRain, 
   Settings, 
@@ -526,6 +538,7 @@ function App() {
           </button>
           <nav className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
             <a href="#features" onClick={() => setIsMenuOpen(false)}>Features</a>
+            <a href="#deployment" onClick={() => setIsMenuOpen(false)}>Deployment</a>
             <a href="#devices" onClick={() => setIsMenuOpen(false)}>Live Stations</a>
             <a href="#specs" onClick={() => setIsMenuOpen(false)}>Specifications</a>
             <a href="#applications" onClick={() => setIsMenuOpen(false)}>Applications</a>
@@ -584,6 +597,47 @@ function App() {
             <div className="stat-desc">{stat.desc}</div>
           </div>
         ))}
+      </section>
+
+      {/* Deployment Map Section */}
+      <section id="deployment" className="deployment-section main-layout" style={{ marginBottom: '4rem' }}>
+        <div className="section-header">
+          <span className="section-subtitle">Live Network</span>
+          <h2 className="section-title">Deployment Map</h2>
+          <p className="section-desc">
+            Geospatial visualization of SSMet0126 weather station nodes.
+          </p>
+        </div>
+        <div className="map-wrapper" style={{ height: '500px', width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
+          <MapContainer center={[31.1, 75.6]} zoom={7} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {devices.map(d => {
+              const lat = parseFloat(d.latitude);
+              const lng = parseFloat(d.longitude);
+              if (isNaN(lat) || isNaN(lng) || (lat === 0 && lng === 0)) return null;
+              return (
+                <Marker key={d.deviceId} position={[lat, lng]}>
+                  <Popup>
+                    <div style={{ padding: '4px' }}>
+                      <strong style={{ fontSize: '14px', color: 'var(--text-dark)' }}>ID: {d.deviceId}</strong><br />
+                      <span style={{ color: '#4b5563' }}>{d.city}, {d.state}</span><br />
+                      <span style={{ 
+                        color: d.isActive ? '#10b981' : '#f43f5e', 
+                        fontWeight: '600',
+                        fontSize: '12px'
+                      }}>
+                        {d.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
+        </div>
       </section>
 
       {/* Real-Time Devices Dashboard Section */}
